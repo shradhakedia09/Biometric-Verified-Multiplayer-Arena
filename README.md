@@ -10,6 +10,22 @@ Good luck, have fun!
 ---
 
 # Identity-Verified Multiplayer Arena
+## Overview
+
+Identity-Verified Multiplayer Arena is a full-stack real-time multiplayer gaming platform that replaces traditional password authentication with biometric facial verification. The system combines automated data harvesting, polyglot persistence using MySQL and MongoDB, secure authentication, WebSocket-based multiplayer communication, and an Elo-based ranking system.
+
+### Key Features
+
+* Facial-recognition-based authentication
+* Polyglot persistence with MySQL and MongoDB
+* Real-time multiplayer communication using WebSockets
+* Multiplayer Tic-Tac-Toe with server-authoritative game state
+* Dynamic Elo rating and leaderboard system
+* Live lobby with player presence tracking
+* Automated profile-image harvesting and storage pipeline
+
+The project was developed as part of the Introduction to Software Systems course and demonstrates concepts spanning distributed systems, databases, networking, authentication, and full-stack application development.
+
 
 ## Phase 1: The Polyglot Harvester
 
