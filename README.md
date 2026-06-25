@@ -218,4 +218,11 @@ No additional service is required. The same FastAPI server handles HTTP and WebS
 * Server must be running before opening the frontend  
 * Multiple users can connect simultaneously  
 * Lobby updates automatically without refresh  
-* Clicking a user sends a real time challenge  
+* Clicking a user sends a real time challenge
+
+## Contributors
+
+* **Shradha Kedia**
+* **Suravaram Pranay Reddy**
+* **Suhaan Dabra**
+
