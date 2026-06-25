@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ISS — Face Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;500;700&display=swap');
+
+    :root {
+      --bg: #050a0e;
+      --surface: #0b1218;
+      --border: #1a2e3a;
+      --accent: #00e5ff;
+      --accent-dim: #00e5ff22;
+      --warn: #ff4444;
+      --ok: #00ff88;
+      --text: #c8d8e0;
+      --muted: #4a6070;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Animated grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      width: 420px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 40px 36px;
+      clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .header .label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    /* Camera frame */
+    .cam-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #000;
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    /* Corner brackets */
+    .cam-wrapper::before,
+    .cam-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--accent);
+      border-style: solid;
+      z-index: 10;
+    }
+    .cam-wrapper::before { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+    .cam-wrapper::after  { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+    #video, #canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #canvas { display: none; }
+
+    /* Scan line animation */
+    .scanline {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 5;
+      top: 0;
+    }
+
+    .scanline.active {
+      animation: scan 1.2s ease-in-out;
+    }
+
+    @keyframes scan {
+      0%   { top: 0%;   opacity: 0; }
+      10%  { opacity: 0.8; }
+      90%  { opacity: 0.8; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* Face guide overlay */
+    .face-guide {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 45%;
+      aspect-ratio: 3/4;
+      border: 1px dashed var(--muted);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 4;
+      transition: border-color 0.3s;
+    }
+
+    .cam-wrapper.scanning .face-guide { border-color: var(--accent); }
+
+    /* Status bar */
+    .status {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 20px;
+      min-height: 18px;
+      transition: color 0.3s;
+    }
+    .status.ok   { color: var(--ok); }
+    .status.warn { color: var(--warn); }
+    .status.info { color: var(--accent); }
+
+    /* Button */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.2s, background 0.2s;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    }
+
+    .btn:hover:not(:disabled) {
+      background: var(--accent-dim);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: var(--muted);
+      color: var(--muted);
+    }
+
+    .btn.loading {
+      pointer-events: none;
+    }
+
+    .btn.loading::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,0.15), transparent);
+      animation: shimmer 1s infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* Result overlay on video */
+    .result-overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .result-overlay.show { display: flex; }
+
+    .result-overlay.success { background: rgba(0,255,136,0.1); }
+    .result-overlay.failure { background: rgba(255,68,68,0.1); }
+
+    .result-icon {
+      font-size: 48px;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .result-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+
+    .result-overlay.success .result-text { color: var(--ok); }
+    .result-overlay.failure .result-text { color: var(--warn); }
+
+    @keyframes popIn {
+      0%   { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .footer-mono {
+      margin-top: 24px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    .toast-stack {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 4000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: min(100%, 340px);
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      background: rgba(8, 14, 20, 0.96);
+      color: var(--text);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.34);
+      transform: translateY(10px);
+      opacity: 0;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-top: 5px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(0, 229, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .toast.success .toast-dot {
+      background: var(--ok);
+      box-shadow: 0 0 0 4px rgba(0, 255, 136, 0.08);
+    }
+
+    .toast.warn .toast-dot,
+    .toast.error .toast-dot {
+      background: var(--warn);
+      box-shadow: 0 0 0 4px rgba(255, 68, 68, 0.08);
+    }
+
+    .toast-copy {
+      display: grid;
+      gap: 3px;
+    }
+
+    .toast-copy strong {
+      font-size: 0.88rem;
+    }
+
+    .toast-copy span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 640px) {
+      .toast-stack {
+        right: 12px;
+        left: 12px;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="toast-stack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+  <div class="container">
+    <div class="header">
+      <div class="label">Integrated Security System</div>
+      <h1>FACE AUTHENTICATION</h1>
+    </div>
+
+    <div class="cam-wrapper" id="camWrapper">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="canvas"></canvas>
+      <div class="scanline" id="scanline"></div>
+      <div class="face-guide"></div>
+      <div class="result-overlay" id="resultOverlay">
+        <div class="result-icon" id="resultIcon"></div>
+        <div class="result-text" id="resultText"></div>
+      </div>
+    </div>
+
+    <div class="status info" id="status">INITIALIZING CAMERA...</div>
+
+    <button class="btn" id="captureBtn" disabled>
+      CAPTURE &amp; AUTHENTICATE
+    </button>
+
+    <div class="footer-mono">FACE LOGIN</div>
+  </div>
+
+  <script>
+    const video       = document.getElementById('video');
+    const canvas      = document.getElementById('canvas');
+    const captureBtn  = document.getElementById('captureBtn');
+    const statusEl    = document.getElementById('status');
+    const scanline    = document.getElementById('scanline');
+    const camWrapper  = document.getElementById('camWrapper');
+    const overlay     = document.getElementById('resultOverlay');
+    const resultIcon  = document.getElementById('resultIcon');
+    const resultText  = document.getElementById('resultText');
+    const toastStack  = document.getElementById('toast-stack');
+
+    const BACKEND_URL = '/auth/login';
+
+    function pushToast(message, type = 'success') {
+      if (!toastStack) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.innerHTML = `
+        <span class="toast-dot"></span>
+        <div class="toast-copy">
+          <strong>${type === 'success' ? 'Success' : type === 'warn' ? 'Warning' : 'Error'}</strong>
+          <span>${message}</span>
+        </div>
+      `;
+      toastStack.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 260);
+      }, 3400);
+    }
+
+    // ── Start webcam ─────────────────────────────────────────────
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480, facingMode: 'user' }
+        });
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+          setStatus('READY — POSITION FACE IN FRAME', 'info');
+          captureBtn.disabled = false;
+        };
+      } catch (err) {
+        setStatus('CAMERA ACCESS DENIED', 'warn');
+        pushToast('Camera access denied.', 'warn');
+        console.error(err);
+      }
+    }
+
+    // ── Capture frame → base64 ────────────────────────────────────
+    function captureFrame() {
+      canvas.width  = video.videoWidth  || 640;
+      canvas.height = video.videoHeight || 480;
+      const ctx = canvas.getContext('2d');
+      // Mirror to match user expectation (selfie view)
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Return base64 without data URI prefix
+      return canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+    }
+
+    // ── UI helpers ────────────────────────────────────────────────
+    function setStatus(msg, type = '') {
+      statusEl.textContent = msg;
+      statusEl.className = 'status ' + type;
+    }
+
+    function triggerScan() {
+      camWrapper.classList.add('scanning');
+      scanline.classList.remove('active');
+      void scanline.offsetWidth; // reflow to restart animation
+      scanline.classList.add('active');
+      setTimeout(() => camWrapper.classList.remove('scanning'), 1200);
+    }
+
+    function showResult(success, message) {
+      overlay.className = 'result-overlay show ' + (success ? 'success' : 'failure');
+      resultIcon.textContent = success ? '✓' : '✗';
+      resultText.textContent = message;
+      setTimeout(() => {
+        overlay.className = 'result-overlay';
+        captureBtn.disabled = false;
+        captureBtn.classList.remove('loading');
+        captureBtn.textContent = 'CAPTURE & AUTHENTICATE';
+      }, 2500);
+    }
+
+    // ── Main authenticate flow ────────────────────────────────────
+    captureBtn.addEventListener('click', async () => {
+      captureBtn.disabled = true;
+      captureBtn.classList.add('loading');
+      captureBtn.textContent = 'SCANNING...';
+      setStatus('SCANNING FACE...', 'info');
+      triggerScan();
+
+      const imageB64 = captureFrame();
+
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image_base64:imageB64 })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          setStatus('ACCESS GRANTED — UID: ' + data.uid, 'ok');
+          showResult(true, 'ACCESS GRANTED');
+          sessionStorage.setItem('uid', data.uid);
+          if (data.name) {
+            sessionStorage.setItem('name', data.name);
+          }
+          if (data.elo_rating !== undefined && data.elo_rating !== null) {
+            sessionStorage.setItem('elo', String(data.elo_rating));
+          }
+          
+          window.location.href = '/dashboard';
+        } else {
+          setStatus(data.detail || 'IDENTITY NOT RECOGNISED', 'warn');
+          pushToast(data.detail || 'Identity not recognised.', 'warn');
+          showResult(false, 'ACCESS DENIED');
+          captureBtn.disabled = false;
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus('SERVER UNREACHABLE', 'warn');
+        pushToast('Server unreachable. Try again.', 'error');
+        showResult(false, 'SERVER ERROR');
+        captureBtn.disabled = false;
+      }
+    });
+
+    startCamera();
+  </script>
+</body>
+</html>

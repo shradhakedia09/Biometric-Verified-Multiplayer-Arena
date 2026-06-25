@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arena Lobby</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Lobby</h1>
+    <div id="conn-status">
+      <span id="status-dot"></span>
+      <span id="status-text">Connecting...</span>
+    </div>
+  </div>
+  <div id="user-count-badge"><span id="user-count">0</span> online</div>
+</header>
+
+<main>
+  <div id="user-grid"></div>
+  <p id="empty-state">No users online</p>
+</main>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

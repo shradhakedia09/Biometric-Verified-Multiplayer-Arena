@@ -1,0 +1,141 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  color: #111;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* ---- Header ---- */
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.header-left h1 {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+#conn-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+#status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #888;
+}
+
+#status-dot.dot-online {
+  background: #1D9E75;
+}
+
+#status-dot.dot-offline {
+  background: #E24B4A;
+}
+
+#user-count-badge {
+  background: #eee;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: #555;
+}
+
+/* ---- Grid ---- */
+
+#user-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+#empty-state {
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+  margin: 3rem 0;
+  display: none;
+}
+
+/* ---- User card ---- */
+
+.user-card {
+  background: #fff;
+  border: 0.5px solid #ddd;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.user-info {
+  overflow: hidden;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-uid {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 0.5px solid #eee;
+  padding-top: 10px;
+}
+
+.elo-label {
+  font-size: 12px;
+  color: #888;
+}
+
+.elo-value {
+  font-size: 14px;
+  font-weight: 500;
+}

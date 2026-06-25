@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arena Leaderboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="leaderboard.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <div id="toast-stack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/dashboard">
+        <span class="brand-mark">ISS</span>
+        <span class="brand-text">Arena Leaderboard</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a class="nav-link" href="/dashboard">Lobby</a>
+        <a class="nav-link active" href="/leaderboard">Leaderboard</a>
+        <button id="logout-btn" class="nav-link nav-button" type="button">Logout</button>
+      </nav>
+
+      <div class="presence-pill">
+        <span class="status-dot dot-online"></span>
+        <span>Global Ranking</span>
+      </div>
+    </header>
+
+    <main class="board-shell">
+      <header class="hero">
+        <p class="hero-kicker">Phase 4</p>
+        <h1>Arena Leaderboard</h1>
+        <p class="hero-subtitle">All players ranked by Elo score, highest first.</p>
+        <div class="hero-actions">
+          <a class="action-btn ghost" href="/dashboard">Back to Dashboard</a>
+          <button id="refresh-btn" class="action-btn" type="button">Refresh</button>
+        </div>
+      </header>
+
+      <section class="meta-strip" aria-label="Leaderboard Summary">
+        <article class="meta-card">
+          <p>Total Players</p>
+          <strong id="total-players">0</strong>
+        </article>
+        <article class="meta-card">
+          <p>Highest Elo</p>
+          <strong id="highest-elo">-</strong>
+        </article>
+        <article class="meta-card">
+          <p>Online Right Now</p>
+          <strong id="online-count">0</strong>
+        </article>
+      </section>
+
+      <section class="table-shell" aria-live="polite">
+        <div class="table-head">
+          <h2>Ranking Table</h2>
+          <span id="last-updated">Last updated: --</span>
+        </div>
+
+        <div id="state-message" class="state-message">Loading leaderboard...</div>
+
+        <div class="table-wrap" role="region" aria-label="Leaderboard" tabindex="0">
+          <table id="leaderboard-table" class="leaderboard" hidden>
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Player</th>
+                <th scope="col">UID</th>
+                <th scope="col">Elo</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="leaderboard.js"></script>
+</body>
+</html>

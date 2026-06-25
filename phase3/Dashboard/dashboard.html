@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arena Lobby</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div id="toast-stack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <div id="incoming-modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-modal-close></div>
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="incoming-title" aria-describedby="incoming-copy">
+      <p class="modal-kicker">Incoming Challenge</p>
+      <h2 id="incoming-title">Match request</h2>
+      <p id="incoming-copy">Waiting for challenge details.</p>
+      <div class="modal-actions">
+        <button id="incoming-decline" class="action-btn ghost" type="button">Decline</button>
+        <button id="incoming-accept" class="action-btn" type="button">Accept</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="menu">
+    <div id="menu-list" class="hidden">
+      <div id="challenge-btn" class="menu-item">Challenge</div>
+      <div id="cancel" class="menu-item">Cancel</div>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/dashboard">
+        <span class="brand-mark">ISS</span>
+        <span class="brand-text">Arena Lobby</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a class="nav-link active" href="/dashboard">Lobby</a>
+        <a class="nav-link" href="/leaderboard">Leaderboard</a>
+        <button id="logout-btn" class="nav-link nav-button" type="button">Logout</button>
+      </nav>
+
+      <div class="presence-pill">
+        <span id="status-dot" class="status-dot"></span>
+        <span id="status-text">Connecting...</span>
+      </div>
+    </header>
+
+    <section class="hero-panel">
+      <div>
+        <p class="eyebrow">Multiplayer Arena</p>
+        <h1>Pick a player and launch a clean challenge flow.</h1>
+        <p class="hero-copy">A polished lobby built around presence, instant matchmaking, and Elo-ranked play.</p>
+      </div>
+
+      <div class="hero-metrics">
+        <article class="metric-card">
+          <p>Online</p>
+          <strong><span id="hero-online-count">0</span> players</strong>
+        </article>
+        <article class="metric-card">
+          <p>You</p>
+          <strong id="profile-name">Awaiting Player</strong>
+          <span id="profile-uid">UID: --</span>
+          <span id="profile-elo">ELO: 1200</span>
+        </article>
+      </div>
+    </section>
+
+    <main class="lobby-layout">
+      <section class="panel players-panel">
+        <div class="panel-head">
+          <div>
+            <p class="section-label">Live Lobby</p>
+            <h2>Online Players</h2>
+          </div>
+          <div class="count-chip"><span id="user-count">0</span> online</div>
+        </div>
+
+        <div id="user-grid"></div>
+        <p id="empty-state">No users online</p>
+      </section>
+
+      <aside class="panel sidebar-panel">
+        <section class="side-card accent-card">
+          <p class="section-label">How it works</p>
+          <ul class="guide-list">
+            <li>Click a player card to challenge.</li>
+            <li>Incoming requests open a custom modal.</li>
+            <li>Use the leaderboard to track Elo standings.</li>
+          </ul>
+        </section>
+
+        <section class="side-card">
+          <p class="section-label">Navigation</p>
+          <div class="side-links">
+            <a class="link-chip" href="/leaderboard">Leaderboard</a>
+            <a class="link-chip" href="/dashboard">Refresh Lobby</a>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

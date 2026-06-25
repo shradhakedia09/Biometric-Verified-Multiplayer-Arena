@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Room | Tic Tac Toe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="room.css" />
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div id="toast-stack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="/dashboard">
+        <span class="brand-mark">ISS</span>
+        <span class="brand-text">Arena Room</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a class="nav-link" href="/dashboard">Lobby</a>
+        <a class="nav-link" href="/leaderboard">Leaderboard</a>
+        <button id="logout-btn" class="nav-link nav-button" type="button">Logout</button>
+      </nav>
+
+      <div class="presence-pill room-pill">
+        <span class="status-dot dot-online"></span>
+        <span>Battle Room</span>
+      </div>
+    </header>
+
+    <main class="room-shell">
+      <header class="top-strip">
+        <section class="player-card player-self">
+          <p class="eyebrow">You</p>
+          <h1 id="self-name">Awaiting Player</h1>
+          <div class="meta-row">
+            <span id="self-uid">UID: --</span>
+            <span id="self-elo">ELO: 1200</span>
+          </div>
+        </section>
+
+        <section class="match-pill">
+          <span class="status-badge">Room</span>
+          <strong id="room-id">ROOM-000</strong>
+          <p id="turn-state">Waiting for game state</p>
+        </section>
+
+        <section class="player-card player-opponent">
+          <p class="eyebrow">Opponent</p>
+          <h1 id="opponent-name">Waiting...</h1>
+          <div class="meta-row">
+            <span id="opponent-uid">UID: --</span>
+            <span id="opponent-elo">ELO: --</span>
+          </div>
+        </section>
+      </header>
+
+      <section class="board-panel">
+        <div class="panel-head">
+          <h2>Tic Tac Toe</h2>
+          <div class="turn-chip" id="current-turn-chip">Turn: X</div>
+        </div>
+
+        <div class="board-wrap">
+          <div id="board" class="board-grid" aria-label="Tic Tac Toe board"></div>
+        </div>
+
+        <section id="result-panel" class="result-panel" hidden aria-live="polite">
+          <p class="result-kicker">Match Result</p>
+          <h3 id="result-title">Round Complete</h3>
+          <p id="result-subtitle">Choose what to do next.</p>
+          <div class="result-actions">
+            <button id="rematch-btn" class="result-btn" type="button">Rematch</button>
+            <button id="lobby-btn" class="result-btn secondary" type="button">Back to Lobby</button>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="room.js"></script>
+</body>
+</html>
